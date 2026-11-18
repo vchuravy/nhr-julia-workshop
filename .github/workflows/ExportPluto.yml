@@ -47,7 +47,7 @@ jobs:
 
       # Pluto reuses the exported state of notebooks whose file did not change.
       - name: Set up notebook state cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: pluto_state_cache
           key: ${{ runner.os }}-pluto_state_cache-v1-${{ hashFiles('Project.toml', '.github/workflows/ExportPluto.yml') }}-${{ hashFiles('**/*.jl') }}

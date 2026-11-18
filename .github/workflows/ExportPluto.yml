@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Install Julia
-        uses: julia-actions/setup-julia@v2
+        uses: julia-actions/setup-julia@v3
         with:
           # Keep in sync with the Julia version pinned in the notebooks
           # and with the version participants are told to install.

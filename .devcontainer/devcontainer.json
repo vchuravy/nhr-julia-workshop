@@ -1,0 +1,28 @@
+{
+    "name": "Julia workshop (Pluto)",
+    // Published by .github/workflows/DockerPublish.yml from the Dockerfile.
+    // Update the owner if the repository is not vchuravy/nhr-julia-workshop.
+    "image": "ghcr.io/vchuravy/nhr-julia-workshop:main",
+
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "julialang.language-julia"
+            ]
+        }
+    },
+
+    // Forward Pluto's port
+    "forwardPorts": [1234],
+    "portsAttributes": {
+        "1234": {
+            "label": "Pluto server",
+            "requireLocalPort": true,
+            "onAutoForward": "ignore"
+        }
+    },
+
+    // Start Pluto when the codespace is attached. The workspace is private to
+    // the codespace owner, so the access secret is disabled for convenience.
+    "postAttachCommand": "julia -e 'using Pluto; Pluto.run(Pluto.Configuration.Options(; server=Pluto.Configuration.ServerOptions(; port=1234, launch_browser=false), security=Pluto.Configuration.SecurityOptions(; require_secret_for_open_links=false, require_secret_for_access=false)))'"
+}

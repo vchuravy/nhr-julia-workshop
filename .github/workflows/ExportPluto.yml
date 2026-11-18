@@ -1,0 +1,71 @@
+name: Export Pluto notebooks
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/ExportPluto.yml'
+      - 'export.jl'
+      - 'pluto_export_configuration.json'
+      - '**/*.jl'
+      - '**/*.toml'
+  workflow_dispatch:
+
+# When two jobs run in parallel, let the older one finish, so that the website
+# is always generated from the most recent commit.
+concurrency:
+  group: pluto-export
+  cancel-in-progress: false
+
+# Permissions needed to deploy to GitHub Pages.
+permissions:
+  actions: write
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build-and-deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v5
+
+      - name: Install Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          # Keep in sync with the Julia version pinned in the notebooks
+          # and with the version participants are told to install.
+          version: '1.13'
+
+      - name: Cache Julia artifacts & such
+        uses: julia-actions/cache@v2
+
+      # Pluto reuses the exported state of notebooks whose file did not change.
+      - name: Set up notebook state cache
+        uses: actions/cache@v4
+        with:
+          path: pluto_state_cache
+          key: ${{ runner.os }}-pluto_state_cache-v1-${{ hashFiles('Project.toml', '.github/workflows/ExportPluto.yml') }}-${{ hashFiles('**/*.jl') }}
+          restore-keys: |
+            ${{ runner.os }}-pluto_state_cache-v1-${{ hashFiles('Project.toml', '.github/workflows/ExportPluto.yml') }}
+
+      - name: Run & export Pluto notebooks
+        run: |
+          julia --color=yes --project=. -e '
+            using Pkg
+            Pkg.instantiate()
+            include("export.jl")'
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+      - name: Deploy GitHub Pages site
+        id: deployment
+        uses: actions/deploy-pages@v4

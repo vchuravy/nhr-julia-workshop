@@ -1,0 +1,16 @@
+{
+    "title": "Introduction to Julia — NHR Süd-West",
+    "description": "Material for the hands-on workshop at Saarland University on 8 December 2026. Click a notebook to read it; use the “Edit or run this notebook” button to download it and run it locally in Pluto.",
+    "collections": [
+        {
+            "title": "Lectures",
+            "description": "Notebooks used during the presentations, in workshop order.",
+            "tags": ["lecture"]
+        },
+        {
+            "title": "Exercises",
+            "description": "Hands-on exercises. Each notebook checks your answers as you go.",
+            "tags": ["exercise"]
+        }
+    ]
+}

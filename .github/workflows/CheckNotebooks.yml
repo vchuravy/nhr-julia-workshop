@@ -1,0 +1,45 @@
+name: Check notebooks
+
+# Run every notebook headlessly and fail if any cell errors.
+# (The Pages export does not fail on cell errors, so this is the safety net.)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/CheckNotebooks.yml'
+      - 'tools/run_notebook.jl'
+      - 'lectures/**'
+      - 'exercises/**'
+      - 'Project.toml'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/CheckNotebooks.yml'
+      - 'tools/run_notebook.jl'
+      - 'lectures/**'
+      - 'exercises/**'
+      - 'Project.toml'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+permissions:
+  contents: read
+
+jobs:
+  run-notebooks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: '1.13'
+
+      - uses: julia-actions/cache@v2
+
+      - name: Run all notebooks
+        run: julia --color=yes --project=. tools/run_notebook.jl lectures/*.jl exercises/*.jl
